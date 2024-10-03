@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hackathon Timer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background-image: linear-gradient( #acb3c1, #dfa4ed);
+        }
+        .navbar {
+            width: 100%;
+        }
+        .navbar img {
+            width: 90%;
+            height: 150px;
+            display: block;
+            padding-left: 70px;
+            padding-right: 70px;
+        }
+        .department {
+            font-family:serif ;
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #8B0000;
+            text-align: center;
+            padding: 1rem 0;
+            width: 100%;
+        }
+        .logo {
+            max-width: 100%;
+            height: auto;
+            margin-top: 5rem;
+
+        }
+        .timer-container {
+            margin-top: 0.1rem;
+            text-align: center;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        #timer {
+            font-size: 5.5rem;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+        button {
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+            margin: 0 0.5rem;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #stop {
+            background-color: #f44336;
+        }
+        #stop:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <img src="navbar.jpg" alt="St. Joseph's College of Engineering">
+    </nav>
+    
+    <div class="department">
+        Department of Electronics and Communication Engineering
+    </div>
+
+    <img src="logo.png" alt="Nextronix '24" class="logo">
+
+    <div class="timer-container">
+        <div id="timer" aria-live="polite">24:00:00</div>
+        <button id="start">Start</button>
+        <button id="stop">Stop</button>
+    </div>
+
+    <script>
+        let timer;
+        let timeLeft = 24 * 60 * 60; // 24 hours in seconds
+        let isRunning = false;
+
+        const timerDisplay = document.getElementById('timer');
+        const startButton = document.getElementById('start');
+        const stopButton = document.getElementById('stop');
+
+        function updateDisplay() {
+            const hours = Math.floor(timeLeft / 3600);
+            const minutes = Math.floor((timeLeft % 3600) / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function startTimer() {
+            if (!isRunning) {
+                timer = setInterval(() => {
+                    if (timeLeft > 0) {
+                        timeLeft--;
+                        updateDisplay();
+                    } else {
+                        clearInterval(timer);
+                        isRunning = false;
+                        startButton.disabled = false;
+                        stopButton.disabled = true;
+                    }
+                }, 1000);
+                isRunning = true;
+                startButton.disabled = true;
+                stopButton.disabled = false;
+            }
+        }
+
+        function stopTimer() {
+            if (isRunning) {
+                clearInterval(timer);
+                isRunning = false;
+                startButton.disabled = false;
+                stopButton.disabled = true;
+            }
+        }
+
+        startButton.addEventListener('click', startTimer);
+        stopButton.addEventListener('click', stopTimer);
+        stopButton.disabled = true;
+        updateDisplay();
+    </script>
+</body>
+</html>
