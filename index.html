@@ -55,7 +55,7 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         #timer {
-            font-size: 7.5rem;
+            font-size: 14rem;
             font-weight: bold;
             margin: 1rem 0;
         }
@@ -78,6 +78,22 @@
         #stop:hover {
             background-color: #d32f2f;
         }
+        #customTime {
+            padding: 0.5rem 1rem;
+            margin: 0 0.5rem;
+            font-size: 1rem;
+            width: 100px;
+            background-image: linear-gradient( #acb3c1, #dfa4ed);
+            border-radius: 4px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: none;
+        }
+        #customTime:focus{
+            outline: none;
+        }
+        #setTimeBtn :hover {
+            border: none;
+        }
     </style>
 </head>
 <body>
@@ -98,56 +114,67 @@
         <div id="timer" aria-live="polite">24:00:00</div>
         <button id="start">Start</button>
         <button id="stop">Stop</button>
+        <input type="text" id="customTime" placeholder="HH:MM:SS">
+        <button id="setTimeBtn">Set Time</button>
     </div>
 
     <script>
         let timer;
-        let timeLeft = 24 * 60 * 60; // 24 hours in seconds
         let isRunning = false;
+        let time = 24 * 60 * 60; // 24 hours in seconds
 
         const timerDisplay = document.getElementById('timer');
-        const startButton = document.getElementById('start');
-        const stopButton = document.getElementById('stop');
+        const startBtn = document.getElementById('start');
+        const stopBtn = document.getElementById('stop');
+        const customTimeInput = document.getElementById('customTime');
+        const setTimeBtn = document.getElementById('setTimeBtn');
+
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
 
         function updateDisplay() {
-            const hours = Math.floor(timeLeft / 3600);
-            const minutes = Math.floor((timeLeft % 3600) / 60);
-            const seconds = timeLeft % 60;
-            timerDisplay.textContent = 
-                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            timerDisplay.textContent = formatTime(time);
         }
 
         function startTimer() {
             if (!isRunning) {
+                isRunning = true;
                 timer = setInterval(() => {
-                    if (timeLeft > 0) {
-                        timeLeft--;
+                    if (time > 0) {
+                        time--;
                         updateDisplay();
                     } else {
-                        clearInterval(timer);
-                        isRunning = false;
-                        startButton.disabled = false;
-                        stopButton.disabled = true;
+                        stopTimer();
                     }
                 }, 1000);
-                isRunning = true;
-                startButton.disabled = true;
-                stopButton.disabled = false;
             }
         }
 
         function stopTimer() {
-            if (isRunning) {
-                clearInterval(timer);
-                isRunning = false;
-                startButton.disabled = false;
-                stopButton.disabled = true;
+            isRunning = false;
+            clearInterval(timer);
+        }
+
+        function setCustomTime() {
+            const customTime = customTimeInput.value;
+            const [hours, minutes, seconds] = customTime.split(':').map(Number);
+            if (!isNaN(hours) && !isNaN(minutes) && !isNaN(seconds)) {
+                time = hours * 3600 + minutes * 60 + seconds;
+                updateDisplay();
+                customTimeInput.value = '';
+            } else {
+                alert('Please enter a valid time in HH:MM:SS format');
             }
         }
 
-        startButton.addEventListener('click', startTimer);
-        stopButton.addEventListener('click', stopTimer);
-        stopButton.disabled = true;
+        startBtn.addEventListener('click', startTimer);
+        stopBtn.addEventListener('click', stopTimer);
+        setTimeBtn.addEventListener('click', setCustomTime);
+
         updateDisplay();
     </script>
 </body>
